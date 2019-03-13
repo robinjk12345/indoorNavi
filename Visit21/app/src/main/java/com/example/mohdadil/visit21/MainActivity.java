@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView distview;
     private double dirLat;
     private double dirLong;
+    private ArrayList<String> chatList = new ArrayList<String>();
 
 
     private double lat1=0;
@@ -312,29 +313,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
         mIALocationManager.registerRegionListener(mRegionListener);
 
-
-        try {
-            if(flag==0) {
-                Bundle bundle = getIntent().getExtras();
-                //  bundle.putDouble("key3", 1);
-                lat1 = bundle.getDouble("key1",0);
-                long1 = bundle.getDouble("key2",0);
-
-                if (lat1 != 0) {
-                    route(lat1, long1);
-                    Log.d("cheking",Double.toString(lat1));
-                    Log.d("cheking",Double.toString(long1));
-                }
-
-            }
-        }catch (Exception e)
-        {
-
-        }
-
-
-
-
     }
 
     public void route(double lat1,double long1)
@@ -403,8 +381,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //loadBuildingLayer(style);
                     enableLocationComponent(mStyle);
                     mapboxMap.addOnMapClickListener(this);
-                });
 
+                    Intent mainIntent = getIntent();
+                    int pos = mainIntent.getIntExtra("pos",0);
+                    setSelected(pos);
+                });
 
 
         ImageView side = findViewById(R.id.side);
@@ -412,9 +393,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this,chat.class);
+                List<Feature> featureListChat=featureCollection.features();
+                if(!chatList.isEmpty()){
+                    chatList.clear();
+                }
+                if(!featureListChat.isEmpty()){
+                    for(int i = 0; i< featureListChat.size(); i++){
+                        if(featureListChat.get(i).hasProperty("name")){
+                            chatList.add(featureListChat.get(i).getStringProperty("name")+" : "+ featureListChat.get(i).getStringProperty("name"));
+                        }
+                    }
+
+                }
+                intent.putExtra("list",chatList);
                 startActivity(intent);
             }
         });
+
 
 
         buttonFifthLevel = findViewById(R.id.fifth_level_button);
@@ -821,7 +816,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             for (int i = 0; i < featureList.size(); i++) {
                 if(featureList.get(i).hasProperty("name")){
                     if (featureList.get(i).getStringProperty("name").equals(name)) {
-                        setSelected(i, true);
+                        setSelected(i);
                     }
                 }
             }
@@ -832,7 +827,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // ........................................................................................................................................
 
-    private void setSelected(int index, boolean flag){
+    private void setSelected(int index){
         deselectAll();
         Feature feature = featureCollection.features().get(index);
         selectFeature(feature);

@@ -24,6 +24,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 public class chat extends AppCompatActivity {
 
     // test tt;
@@ -34,6 +36,8 @@ public class chat extends AppCompatActivity {
     };
 
     List<ChatModel> lstChat = new ArrayList<>();
+
+    ArrayList<String> chatList= new ArrayList<String>();
 
 
     @Override
@@ -46,6 +50,11 @@ public class chat extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         //setContentView(R.layout.activity_main);
 
+        Intent intent = getIntent();
+        if(!chatList.isEmpty()){
+            chatList.clear();
+        }
+        chatList =intent.getStringArrayListExtra("list");
 
 
 
@@ -58,7 +67,7 @@ public class chat extends AppCompatActivity {
         final AutoCompleteTextView editText = findViewById(R.id.actv);
         ImageView bt = findViewById(R.id.button3);
         ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
-                R.layout.custom_list_item, R.id.text_view_list_item, countries);
+                R.layout.custom_list_item, R.id.text_view_list_item, chatList);
         editText.setAdapter(adapter1);
 
 editText.setOnTouchListener(new View.OnTouchListener() {
@@ -76,82 +85,16 @@ editText.setOnTouchListener(new View.OnTouchListener() {
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-
-
-
-
-                // Intent tt = new Intent(this,test.class);
-
-                //get the input like for a normal EditText
                 String input = editText.getText().toString();
-                Log.d("test", input);
-
-
-
-
-               // String str2 = "Angola";
-                if (input.equals("Gents Staff Toilet")) {
-                    // test.show();
-
-                    Intent intent = new Intent(chat.this, MainActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putDouble("key1", 19.07600723);
-                    bundle.putDouble("key2", 72.99196862);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
+                int pos=0;
+                for(int i=0;i<chatList.size();i++){
+                    if(chatList.get(i).equals(input)){
+                        pos=i;
+                    }
                 }
-
-                if (input.equals("Ladies Staff Toilet")) {
-                    // test.show();
-
-                    Intent intent = new Intent(chat.this, MainActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putDouble("key1", 19.07606432);
-                    bundle.putDouble("key2", 72.991542);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                }
-
-                if (input.equals("Elevator")) {
-                    // test.show();
-
-                    Intent intent = new Intent(chat.this, MainActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putDouble("key1", 19.07591032);
-                    bundle.putDouble("key2", 72.99196512);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                }
-
-                if (input.equals("exam cell 4th floor")) {
-                    // test.show();
-
-                    Intent intent = new Intent(chat.this, MainActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putDouble("key1", 19.07613403);
-                    bundle.putDouble("key2", 72.99198054);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                }
-
-                if (input.equals("robocon room")) {
-                    // test.show();
-
-                    Intent intent = new Intent(chat.this, MainActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putDouble("key1", 19.07597505);
-                    bundle.putDouble("key2", 72.99202933);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                }
-
+                Intent mainIntent = new Intent(chat.this,MainActivity.class);
+                mainIntent.putExtra("pos",pos);
+                startActivity(mainIntent);
             }
         });}
 
