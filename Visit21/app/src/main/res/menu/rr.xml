@@ -11,13 +11,5 @@
         android:orderInCategory="100"
 
         android:id="@+id/toilet"/>
-    <item android:title="clear"
-        android:orderInCategory="100"
-
-        android:id="@+id/clear"/>
-    <item android:title="chat"
-        android:orderInCategory="100"
-
-        android:id="@+id/chat"/>
 
 </menu>

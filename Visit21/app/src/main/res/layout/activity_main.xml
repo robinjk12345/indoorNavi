@@ -1,47 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    mapbox:umanoDragView="@id/dragview"
+    mapbox:umanoScrollableView="@id/listView"
+    mapbox:umanoPanelHeight="50dp"
+    mapbox:umanoOverlay="false"
+    mapbox:umanoParallaxOffset="100dp"
+    mapbox:umanoShadowHeight="40dp"
+    android:gravity="bottom">
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        mapbox:mapbox_cameraZoom="20"
-        />
+        android:layout_height="match_parent">
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            mapbox:mapbox_cameraZoom="20"
+            />
 
-    <LinearLayout
-        android:id="@+id/floor_level_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:background="@color/mapboxBlue"
-        android:orientation="vertical"
-        android:layout_alignParentRight="true">
-
-        <Button
-            android:id="@+id/fifth_level_button"
-            android:layout_width="50dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:text="5"
-            android:textColor="@color/mapboxWhite" />
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:layout_alignParentRight="true">
 
-        <Button
-            android:id="@+id/fourth_level_button"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:text="4"
-            android:textColor="@color/mapboxWhite" />
-
-
-    </LinearLayout>
-
-
+            <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
+                android:id="@+id/up_down"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/number_picker_bg"
+                mapbox:snp_buttonIconDown="@drawable/ic_down"
+                mapbox:snp_buttonIconUp="@drawable/ic_up"
+                mapbox:snp_maxValue="5"
+                mapbox:snp_minValue="2"
+                mapbox:snp_orientation="vertical"
+                mapbox:snp_stepSize="1"
+                mapbox:snp_value="4"
+                mapbox:snp_valueMarginEnd="8dp"
+                mapbox:snp_valueMarginStart="8dp" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/side"
@@ -55,108 +60,132 @@
             android:textColor="@color/mapboxWhite" />
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/viewcard"
+            android:layout_marginRight="10px"
+            android:layout_marginLeft="10px"
+            android:id="@+id/poicard"
+
+            android:layout_alignBottom="@id/mapView"
+
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="100px"
+                android:text="sample"
+                android:textAlignment="center"
+                android:textSize="80px"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="80px"
+                android:id="@+id/description"
+                android:textAlignment="center"
+                android:text="sample des"
+                android:textSize="50px"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="150px"
+                android:orientation="horizontal">
 
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/distance"
+                    android:layout_marginLeft="20px"
+                    android:textColor="#FF0000"
+                    android:text="distance:"
+                    android:textSize="60px"
+                    android:textStyle="bold"
+                    />
+
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15px"
+
+
+                    android:id="@+id/arrow"
+                    android:src="@mipmap/ic_arrow"
+
+                    android:text="head"
+                    android:textSize="60px"
+                    android:textStyle="bold"
+                    />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/poinavigatebutton"
+                android:background="@drawable/navibutton"
+                android:layout_marginLeft="20px"
+                android:layout_marginRight="20px"
+                android:layout_marginBottom="15px"
+
+                android:textColor="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start Navigation" />
+
+        </LinearLayout>
+    </RelativeLayout>
 
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:id="@+id/poicard"
-        android:layout_alignBottom="@id/mapView"
-        android:background="@color/mapboxWhite"
-        android:visibility="gone">
+        android:id="@+id/dragview"
+        android:clickable="true"
+        android:focusable="false">
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="sample"
-            android:textAlignment="center"
-            android:textSize="80px"
-            android:textStyle="bold" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="200px"
-            android:id="@+id/description"
-            android:textAlignment="center"
-            android:text="sample des"
-            android:textSize="70px"
-            />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200px"
-            android:orientation="horizontal">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/distance"
-            android:layout_marginLeft="20px"
-android:textColor="@color/mapboxBlue"
-            android:text="distance:"
-            android:textSize="60px"
-            android:textStyle="bold"
-            />
+            android:layout_height="150px"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:background="#220aaaaa"
+            android:weightSum="1">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/time"
-                android:textColor="@color/colorAccent"
-
-                android:layout_marginLeft="30px"
-                android:text="ETA:"
-                android:textSize="60px"
+                android:textAlignment="center"
+                android:textSize="70px"
+                android:layout_weight="1"
+                android:id="@+id/arrow1"
                 android:textStyle="bold"
-                />
+                android:text="^"/>
 
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="200px"-->
-            <!--android:id="@+id/head"-->
-            <!--android:textAlignment="center"-->
-            <!--android:text="head"-->
-            <!--android:textSize="60px"-->
-            <!--android:textStyle="bold"-->
-            <!--/>-->
-        <!--<ImageView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="200px"-->
-        <!--android:id="@+id/arrow"-->
-        <!--android:src="@mipmap/ic_arrow"-->
-        <!--android:textAlignment="center"-->
-        <!--android:text="head"-->
-        <!--android:textSize="60px"-->
-        <!--android:textStyle="bold"-->
-        <!--/>-->
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15px"
-
-
-            android:id="@+id/arrow"
-            android:src="@mipmap/ic_arrow"
-
-            android:text="head"
-            android:textSize="60px"
-            android:textStyle="bold"
-            />
-
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:id="@+id/arrowText"
+                android:layout_weight="1"
+                android:textSize="40px"
+                android:layout_marginBottom="30px"
+                android:textStyle="bold"
+                android:text="Directory"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/poinavigatebutton"
+        <ListView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Start Navigation" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/listView">
 
+        </ListView>
     </LinearLayout>
 
 
-</RelativeLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

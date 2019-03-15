@@ -1,29 +1,17 @@
 package com.example.mohdadil.visit21;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 public class chat extends AppCompatActivity {
@@ -92,7 +80,7 @@ editText.setOnTouchListener(new View.OnTouchListener() {
                         pos=i;
                     }
                 }
-                Intent mainIntent = new Intent(chat.this,MainActivity.class);
+                Intent mainIntent = new Intent(chat.this, MainActivity.class);
                 mainIntent.putExtra("pos",pos);
                 startActivity(mainIntent);
             }

@@ -19,17 +19,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -45,6 +52,7 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.GeoJson;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -73,6 +81,12 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfJoins;
 import com.mapbox.turf.TurfMeasurement;
+import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker;
+import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPickerListener;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,6 +100,7 @@ import static com.mapbox.mapboxsdk.style.expressions.Expression.interpolate;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.match;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.stop;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.typeOf;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.zoom;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
@@ -95,6 +110,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillExtrusionHei
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillExtrusionOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconTextFit;
@@ -104,13 +120,19 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 //import com.mapbox.android.core.location.LocationEngineListener;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener , AdapterView.OnItemClickListener {
 
     private LocationLayerPlugin locationLayerPlugin;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
     private  Boolean check=false;
+    Button btnShow;
+    ScrollableNumberPicker scrollableNumberPickerA;
+    private ArrayList<String> mPoiList= new ArrayList<String>() ;
+    private ArrayAdapter<String> adapter;
+    private double naviLat;
+    private double naviLng;
 
 
     private Location ialastLocation;
@@ -122,11 +144,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private IALocationManager mIALocationManager;
     private GeoJsonSource indoorBuildingSource;
     private List<List<Point>> boundingBoxList;
-    private View levelButtons;
     private Button currButton;
     private Button navi1;
-    private Button buttonFifthLevel;
-    private Button buttonfourthLevel;
     private FeatureCollection featureCollection;
     private AnimatorSet animatorSet;
     private double routeLength = 0;
@@ -134,17 +153,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private  TextView descriptionTextView;
     private LinearLayout poiCard;
     private boolean cardVisible = false;
+    private SlidingUpPanelLayout mSlidingPanel;
     private TextView distview;
     private double dirLat;
     private double dirLong;
     private ArrayList<String> chatList = new ArrayList<String>();
-
-
-    private double lat1=0;
-    private  double long1=0;
-    public static int flag=0;
-
-
 
 
     private List<Polyline> mPolylines = new ArrayList<>();
@@ -152,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private int mFloor;
     private IAWayfindingRequest mWayfindingDestination;
+
 
     private IAWayfindingListener mWayfindingListener = new IAWayfindingListener() {
         @Override
@@ -207,28 +221,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 break;
             }
-
-
-            case R.id.chat: {
-
-                //  flag=1;
-                Intent intent = new Intent(this,chat.class);
-                startActivity(intent);
-
-                break;
-            }
-
-            case R.id.clear: {
-
-                mCurrentRoute = null;
-                mWayfindingDestination = null;
-                mIALocationManager.removeWayfindingUpdates();
-                updateRouteVisualization();
-
-                break;
-            }
-
-
 
         }
 
@@ -305,6 +297,124 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         findViewById(android.R.id.content).setKeepScreenOn(true);
 
+        navi1 = findViewById(R.id.poinavigatebutton);
+        navi1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
+                if(check) {
+
+                    navi1.setText("start navigation");
+                    try {
+                        distview.setText("");
+                    }
+                    catch (Exception e){}
+                    mCurrentRoute = null;
+                    mWayfindingDestination = null;
+                    mIALocationManager.removeWayfindingUpdates();
+                    updateRouteVisualization();
+                    check = false;
+
+                }
+                else
+                {
+                    check = true;
+
+
+                    mWayfindingDestination = new IAWayfindingRequest.Builder()
+                            .withFloor(4)
+                            .withLatitude(naviLat)
+                            .withLongitude(naviLng)
+                            .build();
+
+                    mIALocationManager.requestWayfindingUpdates(mWayfindingDestination, mWayfindingListener);
+                    navi1.setText("cancel navigation");
+                    cardVisible=true;
+                    poiCard.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+
+        scrollableNumberPickerA=(ScrollableNumberPicker)findViewById(R.id.up_down);
+        mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        scrollableNumberPickerA.setListener(new ScrollableNumberPickerListener() {
+            @Override
+            public void onNumberPicked(int value) {
+                // Do some magic
+                //Toast.makeText(MainActivity.this,String.format("%d",scrollableNumberPickerA.getValue()) ,Toast.LENGTH_SHORT).show();
+                int n=scrollableNumberPickerA.getValue();
+
+                if(n==2)
+                {
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("second.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("second.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+                if(n==3)
+                {
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("third.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("third.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+                if(n==4)
+                {
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("fourth.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+
+                if(n==5)
+                {
+
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fifth.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+            }
+        });
+
+
         mIALocationManager = IALocationManager.create(this);
         mapView=findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -313,23 +423,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
         mIALocationManager.registerRegionListener(mRegionListener);
 
+        ListView listView = findViewById(R.id.listView);
+        adapter=new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,mPoiList);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
+
     }
 
-    public void route(double lat1,double long1)
-    {
-        mWayfindingDestination = new IAWayfindingRequest.Builder()
-                .withFloor(4)
-                .withLatitude(lat1)
-                .withLongitude(long1)
-                .build();
+    public void onItemClick(AdapterView<?> l, View v, int position, long id){
 
-        mIALocationManager.requestWayfindingUpdates(mWayfindingDestination, mWayfindingListener);
+        setSelected(position);
+        if (mSlidingPanel.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED)
+        {
+            mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
     }
-
-
-
-
-
 
     @Override
     public void onMapReady(@NonNull MapboxMap mmapboxMap) {
@@ -338,7 +446,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapboxMap.setStyle(new Style.Builder().fromUrl("mapbox://styles/adil-khot/cjrs2yradf2g42tocp5czguq5"),
                 style -> {
                     mStyle=style;
-                    levelButtons = findViewById(R.id.floor_level_buttons);
                     final List<Point> boundingBox = new ArrayList<>();
 
                     boundingBox.add(Point.fromLngLat(72.9914219677448, 19.0762151432401));
@@ -359,11 +466,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (mapboxMap.getCameraPosition().zoom > 18) {
                             if (TurfJoins.inside(Point.fromLngLat(mapboxMap.getCameraPosition().target.getLongitude(),
                                     mapboxMap.getCameraPosition().target.getLatitude()), Polygon.fromLngLats(boundingBoxList))) {
-                                if (levelButtons.getVisibility() != View.VISIBLE) {
+                                if (scrollableNumberPickerA.getVisibility() != View.VISIBLE) {
                                     showLevelButton();
                                 }
                             }
-                        } else if (levelButtons.getVisibility() == View.VISIBLE) {
+                        } else if (scrollableNumberPickerA.getVisibility() == View.VISIBLE) {
                             hideLevelButton();
                         }
                     });
@@ -373,9 +480,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             "indoor-building", loadJsonFromAsset("fourth.geojson"));
                     style.addSource(indoorBuildingSource);
                     featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
                     setupLayer();
-                    currButton = buttonfourthLevel;
-                    ActivateButton(currButton);
 
                     // Add the building layers since we know zoom levels in range
                     //loadBuildingLayer(style);
@@ -387,12 +502,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     setSelected(pos);
                 });
 
-
         ImageView side = findViewById(R.id.side);
         side.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,chat.class);
                 List<Feature> featureListChat=featureCollection.features();
                 if(!chatList.isEmpty()){
                     chatList.clear();
@@ -405,39 +518,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
 
                 }
+                Intent intent = new Intent(MainActivity.this,chat.class);
                 intent.putExtra("list",chatList);
                 startActivity(intent);
             }
         });
 
-
-
-        buttonFifthLevel = findViewById(R.id.fifth_level_button);
-        buttonFifthLevel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
-                featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fifth.geojson"));
-                setupLayer();
-                DeactiveButton(currButton);
-                currButton=buttonFifthLevel;
-                ActivateButton(currButton);
-            }
-        });
-
-        buttonfourthLevel = findViewById(R.id.fourth_level_button);
-        buttonfourthLevel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                indoorBuildingSource.setGeoJson(loadJsonFromAsset("fourth.geojson"));
-                featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
-                setupLayer();
-                DeactiveButton(currButton);
-                currButton=buttonfourthLevel;
-                ActivateButton(currButton);
-            }
-        });
     }
+
     private void removeLayermine(){
         Layer extrusionlayer=mapboxMap.getStyle().getLayer("extrusion-layer");
         Layer poilayer=mapboxMap.getStyle().getLayer("poi-layer");
@@ -456,22 +544,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mStyle.addLayer(new SymbolLayer("poi-layer","indoor-building").withProperties(
                 iconImage("{poi}-15"),
                 iconAllowOverlap(true),
-                iconSize(1f),
-                iconTextFit(Expression.get("name"))
+                iconSize(match(Expression.toString(get("selected")), literal(1.0f),stop("true",1.5f)))
                 )
         );
 
     }
 
-    private void ActivateButton(Button b){
-        b.setTextColor(Color.BLUE);
-        b.setBackgroundColor(Color.WHITE);
-    }
-
-    private void DeactiveButton(Button b){
-        b.setTextColor(Color.WHITE);
-        b.setBackgroundColor(Color.BLUE);
-    }
 
 
     @SuppressWarnings( {"MissingPermission"})
@@ -498,7 +576,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationComponent.setLocationComponentEnabled(true);
 
             // Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING);
+           // locationComponent.setCameraMode(CameraMode.TRACKING);
 
             // Set the component's render mode
             locationComponent.setRenderMode(RenderMode.COMPASS);
@@ -589,8 +667,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // buttons are faded out and hidden.
         AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
         animation.setDuration(500);
-        levelButtons.startAnimation(animation);
-        levelButtons.setVisibility(View.GONE);
+        scrollableNumberPickerA.startAnimation(animation);
+        scrollableNumberPickerA.setVisibility(View.GONE);
     }
 
     private void showLevelButton() {
@@ -598,8 +676,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // the floor level buttons are faded out and hidden.
         AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
         animation.setDuration(500);
-        levelButtons.startAnimation(animation);
-        levelButtons.setVisibility(View.VISIBLE);
+        scrollableNumberPickerA.startAnimation(animation);
+        scrollableNumberPickerA.setVisibility(View.VISIBLE);
     }
 
 //    private void loadBuildingLayer(@NonNull Style style) {
@@ -668,10 +746,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (route.getLegs().size() == 0) {
             return false;
         }
-       // TextView headtxt = (TextView)findViewById(R.id.head) ;
+        // TextView headtxt = (TextView)findViewById(R.id.head) ;
         distview=(TextView)findViewById(R.id.distance);
-      TextView  timeview=(TextView)findViewById(R.id.time);
-      //  headtxt.setText("direction : "+ bearing );
+        TextView  timeview=(TextView)findViewById(R.id.time);
+        //  headtxt.setText("direction : "+ bearing );
 
         final double FINISH_THRESHOLD_METERS = 8.0;
         routeLength=0;
@@ -687,11 +765,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String strDouble = String.format("%.2f", routeLength);
 
         double time = routeLength/1.4;
-        time=time/60;
+        //time=time/60;
         String strtime = String.format("%.2f", time);
 
-        distview.setText("Distance: "+ strDouble+"m");
-        timeview.setText("ETA: "+ strtime+"min");
+        distview.setText("ETA "+strtime+" sec"+" : "+strDouble+" meters", TextView.BufferType.SPANNABLE);
+//        Spannable span = (Spannable) distview.getText();
+//        span.setSpan(new ForegroundColorSpan(0xFFFF0000), 4, 28,
+//                Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+
+      //   timeview.setText("ETA: "+ strtime+"min");
 
         return routeLength < FINISH_THRESHOLD_METERS;
     }
@@ -703,7 +785,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         matrix.postRotate((float) angle, 100f, 100f);
         img.setImageMatrix(matrix);
     }
-
 
     /**
      * Clear the visualizations for the wayfinding paths
@@ -742,16 +823,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             PolylineOptions opt = new PolylineOptions();
             opt.add(new LatLng(leg.getBegin().getLatitude(), leg.getBegin().getLongitude()));
             opt.add(new LatLng(leg.getEnd().getLatitude(), leg.getEnd().getLongitude()));
+            Log.d("Linepoint lat",Double.toString(leg.getBegin().getLatitude()));
+            Log.d("Linepoint long",Double.toString(leg.getBegin().getLatitude()));
+
             if(count==1)
-{
-    dirLat=leg.getEnd().getLatitude();
-    dirLong=leg.getEnd().getLongitude();
-}
+            {
+                dirLat=leg.getEnd().getLatitude();
+                dirLong=leg.getEnd().getLongitude();
+            }
 
             // Here wayfinding path in different floor than current location is visualized in
             // a semi-transparent color
             if (leg.getBegin().getFloor() == mFloor && leg.getEnd().getFloor() == mFloor) {
-                opt.color(0xFF0000FF);
+                opt.color(0xFF9932cc);
             } else {
                 opt.color(0x300000FF);
             }
@@ -766,56 +850,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
+
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-
-
-
-        navi1 = findViewById(R.id.poinavigatebutton);
-        navi1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
-                if(check) {
-
-                    navi1.setText("start navigation");
-                    mCurrentRoute = null;
-                    mWayfindingDestination = null;
-                    mIALocationManager.removeWayfindingUpdates();
-                    updateRouteVisualization();
-                    check = false;
-
-                }
-                else
-                {
-                    check = true;
-
-
-                    mWayfindingDestination = new IAWayfindingRequest.Builder()
-                            .withFloor(4)
-                            .withLatitude(point.getLatitude())
-                            .withLongitude(point.getLongitude())
-                            .build();
-
-                    mIALocationManager.requestWayfindingUpdates(mWayfindingDestination, mWayfindingListener);
-                    navi1.setText("cancel navigation");
-                    cardVisible=true;
-                    poiCard.setVisibility(View.VISIBLE);
-
-                }
-            }
-        });
-
-
         //....................................................................................................................................
         final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
         List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, "poi-layer");
         if(!features.isEmpty()){
-            String name = features.get(0).getStringProperty("name");
+            String id = features.get(0).id();
             List<Feature> featureList = featureCollection.features();
             for (int i = 0; i < featureList.size(); i++) {
                 if(featureList.get(i).hasProperty("name")){
-                    if (featureList.get(i).getStringProperty("name").equals(name)) {
+                    if (featureList.get(i).id().equals(id)) {
                         setSelected(i);
                     }
                 }
@@ -916,6 +962,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     private LatLng convertToLatLng(Feature feature) {
         Point symbolPoint = (Point) feature.geometry();
+        naviLat=symbolPoint.latitude();
+        naviLng=symbolPoint.longitude();
         return new LatLng(symbolPoint.latitude(), symbolPoint.longitude());
     }
 
@@ -933,4 +981,3 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 }
-

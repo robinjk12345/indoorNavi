@@ -3,8 +3,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "lab 1 4th floor",
-        "description": "lab 1",
+        "name": "AX-406",
+        "description": "COMPUTER LAB",
         "poi": "hardware",
         "selected": false
       },
@@ -20,8 +20,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "girls washroom 4th floor",
-        "description": "girls washroom",
+        "name": "AX-413 A ",
+        "description": "LADIES WASHROOM STUDENTS",
         "poi": "toilet",
         "selected": false
       },
@@ -37,8 +37,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Law classroom 1",
-        "description": "classroom for law students",
+        "name": "LAW CLASSROOM 1",
+        "description": "CLASSROOM FOR LAW STUDENTS",
         "poi": "library",
         "selected": false
       },
@@ -54,8 +54,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "ladies staff washroom",
-        "description": "ladies satff washroom 4th floor",
+        "name": "AX-413 B",
+        "description": "LADIES WASHROOM STAFF",
         "poi": "toilet",
         "selected": false
       },
@@ -71,8 +71,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "boys water filter 4th floor",
-        "description": "boys water filter",
+        "name": "WATER FILTER",
+        "description": "BOYS WATER FILTER",
         "poi": "drinking-water",
         "selected": false
       },
@@ -88,8 +88,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "robocon room",
-        "description": "robocon room",
+        "name": "AX-404",
+        "description": "ROBOCON ROOM",
         "poi": "rocket",
         "selected": false
       },
@@ -105,8 +105,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "classroom 4th yr 4th floor",
-        "description": "classroom 4th yr",
+        "name": "AX-411",
+        "description": "CLASSROOM 411",
         "poi": "library",
         "selected": false
       },
@@ -122,8 +122,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "boys side lift 4th floor",
-        "description": "boys side lift",
+        "name": "LIFT",
+        "description": "4TH FLOOR LIFT",
         "poi": "entrance",
         "selected": false
       },
@@ -139,8 +139,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "girls side lift 4th floor",
-        "description": "girls side lift 4th floor",
+        "name": "LIFT",
+        "description": "4TH FLOOR LIFT",
         "poi": "entrance",
         "selected": false
       },
@@ -156,8 +156,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "law classroom 2",
-        "description": "law classroom ",
+        "name": "LAW CLASSROOM 2",
+        "description": "CLASSROOM FOR LAW STUDENTS",
         "poi": "library",
         "selected": false
       },
@@ -173,8 +173,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "classroom 2nd yr 4th floor",
-        "description": "classroom 2nd yr",
+        "name": "AX-407",
+        "description": "CLASSROOM 407",
         "poi": "library",
         "selected": false
       },
@@ -190,8 +190,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "lab 2 4th floor",
-        "description": "lab 2",
+        "name": "AX-408",
+        "description": "NETWORK & SECURITY LAB",
         "poi": "hardware",
         "selected": false
       },
@@ -207,8 +207,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "classroom 3rd yr 4th floor",
-        "description": "classroom 3rd yr",
+        "name": "AX-409",
+        "description": "CLASSROOM 409",
         "poi": "library",
         "selected": false
       },
@@ -224,8 +224,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "lab 3 4th floor",
-        "description": "lab 3",
+        "name": "AX-410",
+        "description": "DATABASE LAB",
         "poi": "hardware",
         "selected": false
       },
@@ -241,8 +241,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Seminar Hall",
-        "description": "seminar hall to conduct seminars",
+        "name": "MOOT COURT",
+        "description": "COURT FOR LAW STUDENTS",
         "poi": "town-hall",
         "selected": false
       },
@@ -258,8 +258,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "girls side stairs 4th floor",
-        "description": "girls side stairs",
+        "name": "STAIRS",
+        "description": "4TH FLOOR STAIRS",
         "poi": "pitch",
         "selected": false
       },
@@ -275,8 +275,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "meeting room",
-        "description": "room to conduct meeting of computer department",
+        "name": "PRINCIPAL OFFICE",
+        "description": "PRINCIPAL OF LAW DEPARTMENT",
         "poi": "museum",
         "selected": false
       },
@@ -292,8 +292,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "boy washroom 4th floor",
-        "description": "boyz washroom",
+        "name": "AX-403 A",
+        "description": "GENTS WASHROOM STUDENTS",
         "poi": "toilet",
         "selected": false
       },
@@ -309,8 +309,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "gents staff washroom 4th floor",
-        "description": "gents staff washroom",
+        "name": "AX-403 B",
+        "description": "GENTS WASHROOM STAFF",
         "poi": "toilet",
         "selected": false
       },
@@ -326,8 +326,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "server side room",
-        "description": "server side room",
+        "name": "AX-405 B",
+        "description": "PLACEMENT CELL",
         "poi": "museum",
         "selected": false
       },
@@ -343,8 +343,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "server room",
-        "description": "server room",
+        "name": "AX-405 A",
+        "description": "SERVER ROOM",
         "poi": "communications-tower",
         "selected": false
       },
@@ -360,8 +360,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "boys stairs 4th floor",
-        "description": "boys stairs",
+        "name": "STAIRS",
+        "description": "4TH FLOOR STAIRS",
         "poi": "pitch",
         "selected": false
       },
@@ -377,8 +377,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "girls water filter",
-        "description": "girls filter 4th floor",
+        "name": "WATER FILTER",
+        "description": "GIRLS WATER FILTER",
         "poi": "drinking-water",
         "selected": false
       },
@@ -394,8 +394,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "exam cell 4th floor",
-        "description": "exam cell",
+        "name": "AX-401",
+        "description": "EXAMINATION CELL",
         "poi": "information",
         "selected": false
       },
@@ -411,9 +411,9 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "exam cell print room 4th floor",
-        "description": "exam cell print room",
-        "poi": "information",
+        "name": "AX-402",
+        "description": "CONFIDENTIAL ROOM",
+        "poi": "roadblock",
         "selected": false
       },
       "geometry": {

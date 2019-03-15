@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Visit21</string>
+    <string name="app_name">Visit</string>
     <string name="access_token">pk.eyJ1IjoiYWRpbC1raG90IiwiYSI6ImNqbml2cmZuZzB0NmszdnBjZXgzcjNqcHcifQ.jJvT2e9uNGQfj_tObZJ7EQ</string>
 
     <string-array name="countries">
@@ -47,7 +47,6 @@
         <item>exam cell 4th floor</item>
         <item>exam cell print room 4th floor</item>
     </string-array>
-
 
 
 </resources>
